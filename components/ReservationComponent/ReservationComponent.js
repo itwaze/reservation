@@ -34,6 +34,9 @@ const useStyles = makeStyles({
   layout: {
     width: "40%",
     margin: "0 auto",
+    '@media only screen and (max-width: 768px)': {
+      width: '90%'
+    }
   },
   paper: {
     marginTop: "2rem",
@@ -41,10 +44,19 @@ const useStyles = makeStyles({
     padding: "2rem",
     boxShadow: "0 0 15px 0 rgba(65,69,146,.2)",
     background: "rgba(255, 255, 255, .5)",
+    '@media only screen and (max-width: 375px)': {
+      padding: '1rem'
+    }
   },
   stepper: {
     margin: "1rem 0 2rem",
     background: "none",
+    '@media only screen and (max-width: 375px)': {
+      padding: '1rem 0'
+    },
+    '@media only screen and (max-width: 320px)': {
+      display: 'none'
+    }
   },
   buttons: {
     display: "flex",

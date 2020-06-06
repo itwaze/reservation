@@ -12,6 +12,9 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   inputWrapper: {
     boxShadow: "0 0 15px 0 rgba(65,69,146,.2)",
+    '@media only screen and (max-width: 320px)': {
+      marginTop: '2rem'
+    }
   },
   progress: {
     position: "relative",
