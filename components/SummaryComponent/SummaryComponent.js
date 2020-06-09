@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
-import { Context } from "../../pages";
+import React from "react";
+import { useSelector, useDispatch } from 'react-redux'
 import GoogleMapReact from "google-map-react";
 import { Room, ExitToApp, PhoneIphone } from "@material-ui/icons";
 import { Typography, Input } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { format } from "date-fns";
+import { handleChangePhone } from '../../actions'
 
 const useStyles = makeStyles({
   mapWrapper: {
@@ -38,23 +39,13 @@ const useStyles = makeStyles({
 });
 
 export const SummaryComponent = () => {
-  const { state, dispatch } = useContext(Context);
   const classes = useStyles();
 
+  const state = useSelector(state => state)
+  const dispatch = useDispatch();
+
   const Marker = () => <Room className={classes.marker} />;
-
-  const handleChangePhone = (e) => {
-    const value = e.target.value.replace(/[()| |-]/gi, "");
-
-    if (!value.includes("+9720")) {
-      const updatedValue = `+9720${value}`;
-      if (value[0] === "0") {
-        const newValue = value.replace(/^./, "");
-        dispatch({ type: "ADD_PHONE", payload: `+9720${newValue}` });
-      } else dispatch({ type: "ADD_PHONE", payload: updatedValue });
-    } else dispatch({ type: "ADD_PHONE", payload: value });
-  };
-
+  
   return (
     <>
       <div className={classes.textWrapper}>
@@ -63,7 +54,7 @@ export const SummaryComponent = () => {
           Checkin:{" "}
         </Typography>
         <Typography className={classes.text} variant="body1">
-          {format(state.checkin, "yyyy-MM-dd HH:mm")}
+          {format(new Date(state.checkin), "yyyy-MM-dd HH:mm")}
         </Typography>
       </div>
       <div className={classes.textWrapper}>
@@ -72,7 +63,7 @@ export const SummaryComponent = () => {
           Checkout:{" "}
         </Typography>
         <Typography className={classes.text} variant="body1">
-          {format(state.checkout, "yyyy-MM-dd HH:mm")}
+          {format(new Date(state.checkout), "yyyy-MM-dd HH:mm")}
         </Typography>
       </div>
       <div className={classes.textWrapper}>
@@ -90,7 +81,7 @@ export const SummaryComponent = () => {
           Phone:
         </Typography>
         <Input
-          onChange={handleChangePhone}
+          onChange={(e) => dispatch(handleChangePhone(e))}
           autoComplete="tel"
           name="phone"
           className={classes.phoneInput}
@@ -98,6 +89,7 @@ export const SummaryComponent = () => {
           autoFocus={true}
           color="primary"
           placeholder="0531234567"
+          defaultValue={state.phone}
         />
       </div>
       <Typography className={classes.text} variant="caption">

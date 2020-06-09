@@ -1,4 +1,4 @@
-export const initialState = {
+const initialState = {
   checkin: new Date(),
   checkout: new Date(),
   error: "",
@@ -6,6 +6,7 @@ export const initialState = {
   marker: {},
   place: {},
   phone: "",
+  activeStep: 0,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -27,6 +28,12 @@ export const reducer = (state = initialState, action) => {
       return { ...state, place: action.payload };
     case "ADD_PHONE":
       return { ...state, phone: action.payload };
+    case "NEXT_STEP":
+      return { ...state, activeStep: state.activeStep + 1 };
+    case "PREV_STEP":
+      return { ...state, activeStep: state.activeStep - 1 };
+    case "CHANGE_STEP":
+      return { ...state, activeStep: action.payload };
     case "ERROR":
       return { ...state, error: action.payload, isCorrectDate: false };
     default:

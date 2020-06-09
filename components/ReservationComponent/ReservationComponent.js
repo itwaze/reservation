@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
-import { format } from "date-fns";
-import { Context } from "../../pages";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   Stepper,
   Step,
@@ -10,21 +11,18 @@ import {
   NoSsr,
   StepConnector,
 } from "@material-ui/core";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { DateComponent } from "../DateComponent/DateComponent";
-import { LocationComponent } from "../LocationComponent/LocationComponent";
-import { SummaryComponent } from "../SummaryComponent/SummaryComponent";
+import { makeStyles } from "@material-ui/core/styles";
 import { Room, CalendarToday, AssignmentTurnedIn } from "@material-ui/icons";
 
 const Copyright = () => {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
+    <Typography variant="body2" color="secondary" align="center">
       Made with ♥️ in Israel
     </Typography>
   );
 };
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   appBar: {
     position: "relative",
   },
@@ -34,29 +32,29 @@ const useStyles = makeStyles({
   layout: {
     width: "40%",
     margin: "0 auto",
-    '@media only screen and (max-width: 768px)': {
-      width: '90%'
-    }
+    "@media only screen and (max-width: 768px)": {
+      width: "90%",
+    },
   },
   paper: {
     marginTop: "2rem",
     marginBottom: "2rem",
     padding: "2rem",
-    boxShadow: "0 0 15px 0 rgba(65,69,146,.2)",
-    background: "rgba(255, 255, 255, .5)",
-    '@media only screen and (max-width: 375px)': {
-      padding: '1rem'
-    }
+    boxShadow: theme.palette.shadow.default,
+    background: theme.palette.background.default,
+    "@media only screen and (max-width: 375px)": {
+      padding: "1rem",
+    },
   },
   stepper: {
     margin: "1rem 0 2rem",
     background: "none",
-    '@media only screen and (max-width: 375px)': {
-      padding: '1rem 0'
+    "@media only screen and (max-width: 375px)": {
+      padding: "1rem 0",
     },
-    '@media only screen and (max-width: 320px)': {
-      display: 'none'
-    }
+    "@media only screen and (max-width: 320px)": {
+      display: "none",
+    },
   },
   buttons: {
     display: "flex",
@@ -68,118 +66,81 @@ const useStyles = makeStyles({
     marginLeft: "1rem",
     padding: "8px 16px",
     border: "none",
-    color: 'rgba(0, 0, 0, 0.87)',
+    color: theme.palette.secondary.main,
     fontWeight: 500,
     cursor: "pointer",
     userSelect: "none",
     borderRadius: "4px",
-    outline: 'none',
+    outline: "none",
     textTransform: "uppercase",
     transition:
       "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     boxShadow:
       "0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
-    backgroundColor: '#e0e0e0',
-    '&:hover': {
-      backgroundColor: 'lightgrey'
-    }
+    backgroundColor: theme.palette.background.default,
+    "&:hover": {
+      backgroundColor: theme.palette.background.disabled,
+    },
   },
   nextButton: {
-    backgroundColor: "dodgerblue",
-    color: 'white',
+    backgroundColor: theme.palette.primary.main,
+    color: "white",
     "&:hover": {
-      backgroundColor: "cornflowerblue",
+      backgroundColor: theme.palette.primary.hover,
     },
   },
-});
+  stepperIcon: {
+    color: theme.palette.primary.main,
+  },
+}));
 
-const ColorlibConnector = withStyles({
-  alternativeLabel: {
-    top: 22,
-  },
-  active: {
-    "& $line": {
-      background: "dodgerblue",
-    },
-  },
-  completed: {
-    "& $line": {
-      background: "dodgerblue",
-    },
-  },
-  line: {
-    height: 2,
-    border: 0,
-    backgroundColor: "darkgray",
-    borderRadius: 1,
-  },
-})(StepConnector);
-
-export const ReservationComponent = () => {
+export const ReservationComponent = ({
+  children,
+  prevHref = "/",
+  nextHref,
+}) => {
   const classes = useStyles();
 
-  const { state } = useContext(Context);
+  const state = useSelector((state) => state);
+
+  const dispatch = useDispatch();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.pathname === "/") dispatch({ type: "CHANGE_STEP", payload: 0 });
+    if (router.pathname === "/location")
+      dispatch({ type: "CHANGE_STEP", payload: 1 });
+    if (router.pathname === "/review")
+      dispatch({ type: "CHANGE_STEP", payload: 2 });
+  }, []);
 
   const steps = ["Checkin", "Location", "Review"];
 
-  const [activeStep, setActiveStep] = useState(0);
-
-  const sendMessage = () => {
-    const baseUrl = `https://api-mapper.clicksend.com/http/v2/send.php?method=http&username=itwaze@gmail.com&key=F8532B0F-E18A-33FB-0BC2-0D01F4D0BF1F&to=${state.phone}&message=`;
-    const data = `Checkin: ${format(
-      state.checkin,
-      "yyyy-MM-dd HH:mm"
-    )}%0D%0ACheckout: ${format(
-      state.checkout,
-      "yyyy-MM-dd HH:mm"
-    )}%0D%0APlace: ${state.place.main} ${state.place.secondary}`;
-
-    fetch(`${baseUrl}${data}`, {
-      method: "POST",
-    }).catch((err) => console.log(err));
-
-    return (
-      <Typography align="center" variant="body1">
-        Your reservation has been successfully created, you will receive an SMS
-        with information.
-      </Typography>
-    );
-  };
-
   const handleNext = () => {
-    setActiveStep(activeStep + 1);
+    dispatch({ type: "NEXT_STEP" });
   };
 
   const handleBack = () => {
-    setActiveStep(activeStep - 1);
-  };
-
-  const getStepContent = (step) => {
-    switch (step) {
-      case 0:
-        return <DateComponent />;
-      case 1:
-        return <LocationComponent />;
-      case 2:
-        return <SummaryComponent />;
-      default:
-        throw new Error("Unknown step");
-    }
+    dispatch({ type: "PREV_STEP" });
   };
 
   const getDisabled = () => {
-    if (activeStep == 0 && !state.isCorrectDate) return true;
-    if (activeStep == 1 && !state.place.main) return true;
+    if (state.activeStep === 0 && !state.isCorrectDate) return true;
+    if (state.activeStep === 1 && !state.place.main) return true;
   };
 
   const renderStepIcon = (i) => {
-    if (i === 0) return <CalendarToday style={{ color: "dodgerblue" }} />;
-    if (i === 1) return <Room style={{ color: "dodgerblue" }} />;
-    if (i === 2) return <AssignmentTurnedIn style={{ color: "dodgerblue" }} />;
+    if (i === 0) return <CalendarToday className={classes.stepperIcon} />;
+    if (i === 1) return <Room className={classes.stepperIcon} />;
+    if (i === 2) return <AssignmentTurnedIn className={classes.stepperIcon} />;
   };
 
   const isDisabled = getDisabled();
-  const nextBtnHoverStyles = isDisabled ? {backgroundColor: 'lightgrey', cursor: 'not-allowed'} : null;
+  const nextBtnHoverStyles = isDisabled
+    ? { backgroundColor: "lightgrey", cursor: "not-allowed" }
+    : null;
+
   return (
     <NoSsr>
       <main className={classes.layout}>
@@ -193,8 +154,8 @@ export const ReservationComponent = () => {
             Reservation
           </Typography>
           <Stepper
-            connector={<ColorlibConnector />}
-            activeStep={activeStep}
+            connector={<StepConnector />}
+            activeStep={state.activeStep}
             className={classes.stepper}
           >
             {steps.map((label, i) => (
@@ -206,43 +167,37 @@ export const ReservationComponent = () => {
             ))}
           </Stepper>
           <React.Fragment>
-            {activeStep === steps.length ? (
-              state.phone.length ? (
-                sendMessage()
-              ) : (
-                <Typography
-                  className={classes.typography}
-                  variant="body1"
-                  align="center"
-                >
-                  Thanks for your reservation!
-                </Typography>
-              )
-            ) : (
-              <React.Fragment>
-                {getStepContent(activeStep)}
+            <React.Fragment>
+              {children}
+              {nextHref ? (
                 <div className={classes.buttons}>
-                  {activeStep !== 0 && (
-                    <button
-                      aria-label="previous step"
-                      onClick={handleBack}
-                      className={classes.button}
-                    >
-                      Back
-                    </button>
+                  {state.activeStep !== 0 && (
+                    <Link href={prevHref}>
+                      <a
+                        aria-label="previous step"
+                        onClick={handleBack}
+                        className={classes.button}
+                      >
+                        Back
+                      </a>
+                    </Link>
                   )}
-                  <button
-                    disabled={isDisabled}
-                    style={nextBtnHoverStyles}
-                    onClick={handleNext}
-                    className={`${classes.button} ${classes.nextButton}`}
-                    aria-label="next step"
-                  >
-                    {activeStep === steps.length - 1 ? "Confirm" : "Next"}
-                  </button>
+                  <Link href={nextHref}>
+                    <a
+                      disabled={isDisabled}
+                      style={nextBtnHoverStyles}
+                      onClick={handleNext}
+                      className={`${classes.button} ${classes.nextButton}`}
+                      aria-label="next step"
+                    >
+                      {state.activeStep === 2
+                        ? "Confirm"
+                        : "Next"}
+                    </a>
+                  </Link>
                 </div>
-              </React.Fragment>
-            )}
+              ) : null}
+            </React.Fragment>
           </React.Fragment>
         </Paper>
         <Copyright />

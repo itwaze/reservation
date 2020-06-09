@@ -1,13 +1,12 @@
-import React, { useContext } from "react";
-import { Typography, NoSsr } from "@material-ui/core";
+import React from "react";
+import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from "@material-ui/core/styles";
 import { DatePickerComponent } from "../DatePickerComponent/DatePickerComponent";
-import { Context } from "../../pages";
-import { differenceInHours } from "date-fns";
+import { handlePicker } from "../../actions";
 import { Alert } from "@material-ui/lab";
 
-const useStyles = makeStyles({
-  typography: {
+const useStyles = makeStyles(theme => ({
+  dateTitle: {
     fontWeight: 100,
     textAlign: "center",
     fontSize: '1.2rem',
@@ -42,61 +41,17 @@ const useStyles = makeStyles({
     margin: "0 auto",
     display: "flex",
   },
-});
+}));
 
 export const DateComponent = () => {
   const classes = useStyles();
 
-  const { state, dispatch } = useContext(Context);
-
-  const handlePicker = (date, isCheckin = false) => {
-    const difference = isCheckin
-      ? differenceInHours(date, new Date())
-      : differenceInHours(date, state.checkin);
-
-    if (isCheckin && difference >= 2) {
-      dispatch({
-        type: "ADD_CHECKIN",
-        payload: date,
-      });
-      if (differenceInHours(state.checkout, date) < 0) {
-        dispatch({
-          type: "NOT_CORRECT_DATE",
-        });
-      }
-    } else if (
-      !isCheckin &&
-      difference >= 4 &&
-      differenceInHours(state.checkin, new Date()) >= 2
-    ) {
-      dispatch({
-        type: "ADD_CHECKOUT",
-        payload: date,
-      });
-    } else if (
-      (isCheckin && difference < 2) ||
-      (!isCheckin && differenceInHours(state.checkin, new Date()) < 2)
-    ) {
-      dispatch({
-        type: "ERROR",
-        payload: "Checkin can be only in the next 2 hours",
-      });
-    } else if (!isCheckin && difference >= 0 && difference < 4) {
-      dispatch({
-        type: "ERROR",
-        payload: "The total time of booking must be more than 4 hours",
-      });
-    } else if (!isCheckin && difference < 0) {
-      dispatch({
-        type: "ERROR",
-        payload: "Checkout time must be bigger than checkin",
-      });
-    } else console.log("another error");
-  };
+  const dispatch = useDispatch()
+  const state = useSelector(state => state)
 
   return (
-    <NoSsr>
-      <p className={classes.typography} >
+    <>
+      <p className={classes.dateTitle} >
         Select a reservation date
       </p>
       <div className={classes.pickerWrapper}>
@@ -104,12 +59,12 @@ export const DateComponent = () => {
           className={classes.picker}
           label="Check-in"
           value={state.checkin}
-          handleDateChange={(date) => handlePicker(date, true)}
+          handleDateChange={(date) => dispatch(handlePicker(date, true))}
         />
         <DatePickerComponent
           label="Check-out"
           value={state.checkout}
-          handleDateChange={(date) => handlePicker(date)}
+          handleDateChange={(date) => dispatch(handlePicker(date))}
         />
       </div>
       {state.error.length ? (
@@ -117,6 +72,6 @@ export const DateComponent = () => {
           {state.error}
         </Alert>
       ) : null}
-    </NoSsr>
+    </>
   );
 };

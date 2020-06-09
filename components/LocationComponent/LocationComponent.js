@@ -1,6 +1,7 @@
-import React, { useContext } from "react";
-import { Context } from "../../pages";
+import React from "react";
+import { useDispatch } from 'react-redux'
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import { fetchPlaceData } from '../../actions'
 import {
   TextField,
   CircularProgress,
@@ -36,20 +37,7 @@ const useStyles = makeStyles({
 export const LocationComponent = () => {
   const classes = useStyles();
 
-  const { dispatch } = useContext(Context);
-
-  const fetchPlaceData = (place) => {
-    const baseUrl = "https://api.opencagedata.com/geocode/v1/json?q=";
-    const apiKey = "&key=afee0d3bb2754511b31cca1c2d4d7c79";
-
-    fetch(`${baseUrl}${place.main}, ${place.secondary}${apiKey}`)
-      .then((res) => res.json())
-      .then((data) => {
-        dispatch({ type: "ADD_MARKER", payload: data.results[0].geometry });
-        dispatch({ type: "ADD_PLACE", payload: place });
-      })
-      .catch((err) => console.log(err));
-  };
+  const dispatch = useDispatch()
 
   const handleSelectPlace = (e) => {
     const place = {
@@ -57,7 +45,7 @@ export const LocationComponent = () => {
       secondary: e.structured_formatting.secondary_text || "",
     };
 
-    fetchPlaceData(place);
+    dispatch(fetchPlaceData(place))
   };
 
   return (
