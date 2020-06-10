@@ -11,6 +11,7 @@ export const DatePickerComponent = ({ field, form, ...props }) => {
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDateTimePicker
         label={field.name}
+        ariaLabel={field.name}
         disablePast
         ampm={false}
         error={Boolean(currentError)}

@@ -3,7 +3,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#1e90ff",
+      main: "#bf85ff",
       hover: '#64b5f6'
     },
     secondary: {
@@ -27,12 +27,12 @@ const theme = createMuiTheme({
       },
       active: {
         "& $line": {
-          background: "#1e90ff",
+          background: "#bf85ff",
         },
       },
       completed: {
         "& $line": {
-          background: "#1e90ff",
+          background: "#bf85ff",
         },
       },
       line: {

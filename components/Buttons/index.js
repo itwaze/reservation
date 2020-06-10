@@ -15,7 +15,6 @@ const useStyles = makeStyles((theme) => ({
     padding: "8px 16px",
     border: "none",
     color: theme.palette.secondary.main,
-    fontWeight: 500,
     cursor: "pointer",
     userSelect: "none",
     borderRadius: "4px",
@@ -32,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
   nextButton: {
     backgroundColor: theme.palette.primary.main,
-    color: "white",
+    color: theme.palette.secondary.main,
     "&:hover": {
       backgroundColor: theme.palette.primary.hover,
     },
