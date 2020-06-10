@@ -4,7 +4,7 @@ const initialState = {
   error: "",
   isCorrectDate: false,
   marker: {},
-  place: {},
+  place: { main: "", secondary: "" },
   phone: "",
   activeStep: 0,
 };

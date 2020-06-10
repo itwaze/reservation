@@ -4,21 +4,23 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 
+export const DatePickerComponent = ({ field, form, ...props }) => {
+  const currentError = form.errors[field.name];
 
-export const DatePickerComponent = ({ value, handleDateChange, label, className }) => {
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDateTimePicker
-        KeyboardButtonProps={{['aria-label']: value}}
-        leftArrowButtonProps={{['aria-label']: label}}
-        rightArrowButtonProps={{['aria-label']: label}}
-        className={className}
-        value={value}
-        onChange={handleDateChange}
-        label={label}
-        format="yyyy-MM-dd hh:mm"
-        ampm={false}
+        label={field.name}
         disablePast
+        ampm={false}
+        error={Boolean(currentError)}
+        helperText={currentError}
+        format="yyyy-MM-dd hh:mm"
+        value={props.values[field.name]}
+        onChange={(value) => props.setFieldValue(field.name, value, true)}
+        KeyboardButtonProps={{
+          "aria-label": "change date",
+        }}
       />
     </MuiPickersUtilsProvider>
   );

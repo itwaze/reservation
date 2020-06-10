@@ -6,7 +6,7 @@ import { ReservationComponent } from "../components/ReservationComponent/Reserva
 const Review = () => {
   return (
     <NoSsr>
-      <ReservationComponent prevHref='/location' nextHref='/thanks'>
+      <ReservationComponent>
         <SummaryComponent />
       </ReservationComponent>
     </NoSsr>

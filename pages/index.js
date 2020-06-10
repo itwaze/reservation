@@ -11,7 +11,7 @@ const Home = () => {
         <title>Reservation App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <ReservationComponent nextHref='/location'>
+      <ReservationComponent>
         <DateComponent />
       </ReservationComponent>
     </div>

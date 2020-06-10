@@ -19,16 +19,6 @@ class MyDocument extends Document {
             <NextScript />
           </body>
         </Html>
-        <style jsx global>{`
-          * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-          }
-          body {
-            background: linear-gradient(to right, #757f9a, #d7dde8);
-          }
-        `}</style>
       </>
     );
   }

@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import {
   Stepper,
@@ -13,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Room, CalendarToday, AssignmentTurnedIn } from "@material-ui/icons";
+import { differenceInHours } from "date-fns";
 
 const Copyright = () => {
   return (
@@ -56,49 +56,12 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
-  buttons: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "baseline",
-  },
-  button: {
-    marginTop: "2rem",
-    marginLeft: "1rem",
-    padding: "8px 16px",
-    border: "none",
-    color: theme.palette.secondary.main,
-    fontWeight: 500,
-    cursor: "pointer",
-    userSelect: "none",
-    borderRadius: "4px",
-    outline: "none",
-    textTransform: "uppercase",
-    transition:
-      "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-    boxShadow:
-      "0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
-    backgroundColor: theme.palette.background.default,
-    "&:hover": {
-      backgroundColor: theme.palette.background.disabled,
-    },
-  },
-  nextButton: {
-    backgroundColor: theme.palette.primary.main,
-    color: "white",
-    "&:hover": {
-      backgroundColor: theme.palette.primary.hover,
-    },
-  },
   stepperIcon: {
     color: theme.palette.primary.main,
   },
 }));
 
-export const ReservationComponent = ({
-  children,
-  prevHref = "/",
-  nextHref,
-}) => {
+export const ReservationComponent = ({ children }) => {
   const classes = useStyles();
 
   const state = useSelector((state) => state);
@@ -113,17 +76,22 @@ export const ReservationComponent = ({
       dispatch({ type: "CHANGE_STEP", payload: 1 });
     if (router.pathname === "/review")
       dispatch({ type: "CHANGE_STEP", payload: 2 });
+
+    stateChecker();
   }, []);
 
+  const stateChecker = () => {
+    const difference = differenceInHours(new Date(), new Date(state.checkin));
+
+    if (
+      (router.pathname === "/location" && difference >= 0) ||
+      (router.pathname === "/review" && difference >= 0) ||
+      (router.pathname === "/review" && !state.place.main.length)
+    )
+      router.push("/");
+  };
+
   const steps = ["Checkin", "Location", "Review"];
-
-  const handleNext = () => {
-    dispatch({ type: "NEXT_STEP" });
-  };
-
-  const handleBack = () => {
-    dispatch({ type: "PREV_STEP" });
-  };
 
   const getDisabled = () => {
     if (state.activeStep === 0 && !state.isCorrectDate) return true;
@@ -137,9 +105,6 @@ export const ReservationComponent = ({
   };
 
   const isDisabled = getDisabled();
-  const nextBtnHoverStyles = isDisabled
-    ? { backgroundColor: "lightgrey", cursor: "not-allowed" }
-    : null;
 
   return (
     <NoSsr>
@@ -167,41 +132,21 @@ export const ReservationComponent = ({
             ))}
           </Stepper>
           <React.Fragment>
-            <React.Fragment>
-              {children}
-              {nextHref ? (
-                <div className={classes.buttons}>
-                  {state.activeStep !== 0 && (
-                    <Link href={prevHref}>
-                      <a
-                        aria-label="previous step"
-                        onClick={handleBack}
-                        className={classes.button}
-                      >
-                        Back
-                      </a>
-                    </Link>
-                  )}
-                  <Link href={nextHref}>
-                    <a
-                      disabled={isDisabled}
-                      style={nextBtnHoverStyles}
-                      onClick={handleNext}
-                      className={`${classes.button} ${classes.nextButton}`}
-                      aria-label="next step"
-                    >
-                      {state.activeStep === 2
-                        ? "Confirm"
-                        : "Next"}
-                    </a>
-                  </Link>
-                </div>
-              ) : null}
-            </React.Fragment>
+            <React.Fragment>{children}</React.Fragment>
           </React.Fragment>
         </Paper>
         <Copyright />
       </main>
+      <style jsx global>{`
+          * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+          }
+          body {
+            background: linear-gradient(to right, #757f9a, #d7dde8);
+          }
+        `}</style>
     </NoSsr>
   );
 };

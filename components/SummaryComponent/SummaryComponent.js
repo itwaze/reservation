@@ -6,6 +6,7 @@ import { Typography, Input } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { format } from "date-fns";
 import { handleChangePhone } from '../../actions'
+import { Buttons } from '../Buttons'
 
 const useStyles = makeStyles({
   mapWrapper: {
@@ -106,6 +107,7 @@ export const SummaryComponent = () => {
           <Marker lat={state.marker.lat} lng={state.marker.lng} />
         </GoogleMapReact>
       </div>
+      <Buttons backLink='/location' withBack />
     </>
   );
 };
