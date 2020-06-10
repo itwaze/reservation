@@ -81,11 +81,11 @@ export const ReservationComponent = ({ children }) => {
   }, []);
 
   const stateChecker = () => {
-    const difference = differenceInHours(new Date(), new Date(state.checkin));
-
+    const difference = differenceInHours(new Date(state.checkin), new Date());
+    
     if (
-      (router.pathname === "/location" && difference >= 0) ||
-      (router.pathname === "/review" && difference >= 0) ||
+      (router.pathname === "/location" && difference <= 2) ||
+      (router.pathname === "/review" && difference <= 2) ||
       (router.pathname === "/review" && !state.place.main.length)
     )
       router.push("/");
