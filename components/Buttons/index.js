@@ -1,7 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useRouter } from 'next/router'
-import { number } from "yup";
 
 const useStyles = makeStyles((theme) => ({
   btnWrapper: {
@@ -52,7 +51,7 @@ export const Buttons = ({ backLink, withBack = false }) => {
     <div className={classes.btnWrapper}>
       {withBack ? (
         <>
-          <button onClick={handleBack} className={classes.button}>BACK</button>
+          <button type='button' onClick={handleBack} className={classes.button}>BACK</button>
           <button
             {...onClickProperty}
             className={`${classes.button} ${classes.nextButton}`}

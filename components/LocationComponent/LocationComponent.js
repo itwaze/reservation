@@ -68,7 +68,9 @@ export const LocationComponent = () => {
     <Formik
       initialValues={{ location: `${place.main} ${place.secondary}`.trim() }}
       validationSchema={schema}
-      onSubmit={() => router.push('/review')}
+      onSubmit={(e) => {
+        router.push('/review')
+      }}
       render={({ values, errors, setFieldValue }) => {
         return (
           <Form>
